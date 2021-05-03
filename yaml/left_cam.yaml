@@ -1,0 +1,37 @@
+%YAML:1.0
+---
+camera_matrix: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [ 3.7340115542321979e+02, 0., 6.5794963111513641e+02, 0.,
+       3.6276126493436300e+02, 3.8121623343424432e+02, 0., 0., 1. ]
+dist_coeffs: !!opencv-matrix
+   rows: 4
+   cols: 1
+   dt: d
+   data: [ 2.8277540972013994e-02, -7.3935842346662351e-03,
+       -4.9312687804227220e-03, 4.7770641371897547e-04 ]
+resolution: !!opencv-matrix
+   rows: 2
+   cols: 1
+   dt: i
+   data: [ 1280, 720 ]
+project_matrix: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [ -2.1619345519332356e+00, -3.2379925013553272e+00,
+       1.4564200790385464e+03, -3.2544896460288969e-01,
+       -3.0661655446304503e+00, 9.1283640391508811e+02,
+       -1.3199532813523750e-03, -8.4950823983210161e-03, 1. ]
+scale_xy: !!opencv-matrix
+   rows: 2
+   cols: 1
+   dt: f
+   data: [ 6.00000024e-01, 6.99999988e-01 ]
+shift_xy: !!opencv-matrix
+   rows: 2
+   cols: 1
+   dt: f
+   data: [ 0., 0. ]
