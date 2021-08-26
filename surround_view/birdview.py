@@ -26,7 +26,7 @@ class ProjectedImageBuffer(object):
         self.current_frames = dict()
 
     def bind_thread(self, thread):
-        with QMutexLocker(self.mutex):
+        with er(self.mutex):
             self.sync_devices.add(thread.device_id)
 
         name = thread.camera_model.camera_name

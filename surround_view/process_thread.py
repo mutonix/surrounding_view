@@ -19,7 +19,7 @@ class CameraProcessingThread(BaseThread):
         """
         capture_buffer_manager: an instance of the `MultiBufferManager` object.
         device_id: device number of the camera to be processed.
-        camera_model: an instance of the `FisheyeCameraModel` object.
+        camera_model: an instance of the 'FisheyeCameraModel` object.
         drop_if_full: drop if the buffer is full.
         """
         super(CameraProcessingThread, self).__init__(parent)
