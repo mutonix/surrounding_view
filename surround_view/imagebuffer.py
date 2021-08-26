@@ -7,13 +7,15 @@ class Buffer(object):
 
     def __init__(self, buffer_size=5):
         self.buffer_size = buffer_size
-        # 记录已经使用的buffer量, 用semaphore控制进程进行写入add()
+        # 记录已经使用的buffer量, 用semaphore控制线程进行写入add()
         self.free_slots = QSemaphore(self.buffer_size) 
-        # 记录已经使用的buffer量，用semaphore控制进程进行读取get()
+        # 记录已经使用的buffer量，用semaphore控制线程进行读取get()
         self.used_slots = QSemaphore(0) 
         self.clear_buffer_add = QSemaphore(1)
         self.clear_buffer_get = QSemaphore(1)
         self.queue = Queue(self.buffer_size)
+            # Semaphore: release -> 计数器+1 acquire -> 计数器-1
+            # 计数器不能小于0，当计数器为0时，acquire()将阻塞线程直到其他线程调用release()
 
     def add(self, data, drop_if_full=False):
         self.clear_buffer_add.acquire()
@@ -21,7 +23,7 @@ class Buffer(object):
             if self.free_slots.tryAcquire():
                 self.queue.put(data)
                 self.used_slots.release()
-        else: # 如果不dropiffull 则acquire()挂起等待
+        else: # 如果不dropitfull 则acquire()挂起等待
             self.free_slots.acquire()
             self.queue.put(data)
             self.used_slots.release()
@@ -82,7 +84,7 @@ class Buffer(object):
     def isempty(self):
         return self.queue.qsize() == 0
 
-
+# 通过buffer_map字典 管理多线程的缓存
 class MultiBufferManager(object):
 
     """

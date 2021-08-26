@@ -15,11 +15,14 @@ def get_projection_map(camera_model, image):
     und_image = camera_model.undistort(image)
     name = camera_model.camera_name
     gui = PointSelector(und_image, title=name)
+
+    # 由settings获取目标点
     dst_points = settings.project_keypoints[name]
     choice = gui.loop()
     if choice > 0:
         src = np.float32(gui.keypoints)
         dst = np.float32(dst_points)
+        # 获取透视变换矩阵
         camera_model.project_matrix = cv2.getPerspectiveTransform(src, dst)
         proj_image = camera_model.project(und_image)
 

@@ -4,7 +4,7 @@ from PyQt5.QtCore import (QThread, QTime, pyqtSignal)
 
 from .structures import ThreadStatisticsData
 
-
+# 其实只有stop用到 其他都是计算时间和帧率的
 class BaseThread(QThread):
 
     """

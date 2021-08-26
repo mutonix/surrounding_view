@@ -9,7 +9,7 @@ from . import param_settings as settings
 from .param_settings import xl, xr, yt, yb
 from . import utils
 
- 
+# 和MultiImageBuffer功能类似 缓存管理换为current_frames
 class ProjectedImageBuffer(object):
 
     """
@@ -18,7 +18,7 @@ class ProjectedImageBuffer(object):
 
     def __init__(self, drop_if_full=True, buffer_size=8):
         self.drop_if_full = drop_if_full
-        self.buffer = Buffer(buffer_size)
+        self.buffer = Buffer(buffer_size)      # 用于装current_frames 一组4张图
         self.sync_devices = set()
         self.wc = QWaitCondition()
         self.mutex = QMutex()
@@ -118,7 +118,9 @@ def RIV(right_image):
 def RM(right_image):
     return right_image[yt:yb, :]
 
-
+"""
+重叠区域的掩模只用于了亮度调整 并未用于拼接
+"""
 class BirdView(BaseThread):
 
     def __init__(self,
@@ -140,6 +142,7 @@ class BirdView(BaseThread):
         return self.buffer.get()
 
     def update_frames(self, images):
+        # 获取一组4张图片
         self.frames = images
 
     def load_weights_and_masks(self, weights_image, masks_image):
@@ -153,6 +156,7 @@ class BirdView(BaseThread):
         Mmat = utils.convert_binary_to_bool(Mmat)
         self.masks = [Mmat[:, :, k] for k in range(4)]
 
+    # 计算重叠区域
     def merge(self, imA, imB, k):
         G = self.weights[k]
         return (imA * G + imB * (1 - G)).astype(np.uint8)
@@ -193,12 +197,16 @@ class BirdView(BaseThread):
     def C(self):
         return self.image[yt:yb, xl:xr]
 
+    # 拼接
     def stitch_all_parts(self):
+        # 一组4张图片 分别对应前 后 左 右
         front, back, left, right = self.frames
+        # 前 后 左 右 非重叠区域
         np.copyto(self.F, FM(front))
         np.copyto(self.B, BM(back))
         np.copyto(self.L, LM(left))
         np.copyto(self.R, RM(right))
+        # 四个角的重叠区域
         np.copyto(self.FL, self.merge(FI(front), LI(left), 0))
         np.copyto(self.FR, self.merge(FII(front), RII(right), 1))
         np.copyto(self.BL, self.merge(BIII(back), LIII(left), 2))
@@ -327,6 +335,7 @@ class BirdView(BaseThread):
             self.stitch_all_parts()
             #self.make_white_balance()
             self.copy_car_image()
+            # 全景拼接好的加入缓存
             self.buffer.add(self.image.copy(), self.drop_if_full)
 
             # update statistics

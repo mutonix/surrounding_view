@@ -47,7 +47,6 @@ class CaptureThread(BaseThread):
                 self.stopped = False
                 break
 
-
             # save capture time
             self.processing_time = self.clock.elapsed()
             # start timer (used to calculate capture rate)

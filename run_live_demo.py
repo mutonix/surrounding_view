@@ -20,6 +20,7 @@ yamls_dir = os.path.join(os.getcwd(), "yaml")
 camera_ids = [0, 1, 3, 4]
 names = settings.camera_names
 cameras_files = [os.path.join(yamls_dir, name + ".yaml") for name in names]
+# 每个摄像头一个摄像头对象 用于畸变矫正和透视变换
 camera_models = [FisheyeCameraModel(camera_file, name) for camera_file, name in zip(cameras_files, names)]
 resolution = None#(int(640), int(360))
 

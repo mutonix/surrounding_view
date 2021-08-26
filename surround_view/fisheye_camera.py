@@ -4,7 +4,12 @@ import cv2
 
 from . import param_settings as settings
 
-
+"""
+每个鱼眼摄像头对应一个对象
+用于：
+1. 畸变矫正
+2. 透视变换
+"""
 class FisheyeCameraModel(object):
 
     """
@@ -27,6 +32,7 @@ class FisheyeCameraModel(object):
         self.project_shape = settings.project_shapes[self.camera_name]            
         self.load_camera_params()
 
+    # 装填相机参数文件
     def load_camera_params(self):
         fs = cv2.FileStorage(self.camera_file, cv2.FILE_STORAGE_READ)
         self.camera_matrix = fs.getNode("camera_matrix").mat()
@@ -48,6 +54,7 @@ class FisheyeCameraModel(object):
         fs.release()
         self.update_undistort_maps()
 
+    # 获取进行畸变矫正的map
     def update_undistort_maps(self):
         new_matrix = self.camera_matrix.copy()
         new_matrix[0, 0] *= self.scale_xy[0]
@@ -57,6 +64,7 @@ class FisheyeCameraModel(object):
         width, height = self.resolution
         width, height = int(width), int(height)
 
+        # 返回两个参数(元组) mapx:逐像素的查找表 mapy:用于插值平滑的一维数组
         self.undistort_maps = cv2.fisheye.initUndistortRectifyMap(
             self.camera_matrix,
             self.dist_coeffs,
